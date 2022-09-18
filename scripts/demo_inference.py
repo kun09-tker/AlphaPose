@@ -181,7 +181,7 @@ def extractAlphaPose(list_image, batch_name, outputpath):
     #     det_worker = det_loader.start()
     # else:
     det_loader = DetectionLoader(input_source, get_detector(args), cfg, args, batchName = batch_name, batchSize=args.detbatch, queueSize=args.qsize)
-    # det_worker = det_loader.start()
+    det_worker = det_loader.start()
 
     # Load pose model
     pose_model = builder.build_sppe(cfg.MODEL, preset_cfg=cfg.DATA_PRESET)
