@@ -104,17 +104,12 @@ venv.bak/
 .vscode
 .tensorboard
 exp/coco*
-*.pth
-*.weights
 exp/json/test_kpt.json
 exp/json/test_gt_kpt.json
 exp/json/validate_rcnn_kpt.json
 exp/json/validate_gt_kpt.json
-data/
 tmp/
 exp/json
 tmp_*/
 examples/res*/
-data/
 exp/
-data
