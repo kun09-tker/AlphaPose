@@ -1,5 +1,4 @@
 """Script for single-gpu/multi-gpu demo."""
-import argparse
 import os
 import platform
 import sys
@@ -22,86 +21,25 @@ from alphapose.utils.transforms import flip, flip_heatmap
 from alphapose.utils.vis import getTime
 # from alphapose.utils.webcam_detector import WebCamDetectionLoader
 from alphapose.utils.writer import DataWriter
-from alphapose.utils import args
+from alphapose.utils.args import args
 
 """----------------------------- Demo options -----------------------------"""
-# # parser = argparse.ArgumentParser(description='AlphaPose Demo')
-# # parser.add_argument('--cfg', type=str, required=True,
-# #                     help='experiment configure file name')
-# # parser.add_argument('--checkpoint', type=str, required=True,
-# #                     help='checkpoint file name')
-# parser.add_argument('--sp', default=False, action='store_true',
-#                     help='Use single process for pytorch')
-# parser.add_argument('--detector', dest='detector',
-#                     help='detector name', default="yolo")
-# # parser.add_argument('--detfile', dest='detfile',
-# #                     help='detection result file', default="")
-# # parser.add_argument('--indir', dest='inputpath',
-# #                     help='image-directory', default="")
-# # parser.add_argument('--list', dest='inputlist',
-# #                     help='image-list', default="")
-# # parser.add_argument('--image', dest='inputimg',
-# #                     help='image-name', default="")
-# # parser.add_argument('--outdir', dest='outputpath',
-# #                     help='output-directory', default="./out/")
-# parser.add_argument('--save_img', default=False, action='store_true',
-#                     help='save result as image')
-# parser.add_argument('--vis', default=False, action='store_true',
-#                     help='visualize image')
-# parser.add_argument('--showbox', default=False, action='store_true',
-#                     help='visualize human bbox')
-# parser.add_argument('--profile', default=False, action='store_true',
-#                     help='add speed profiling at screen output')
-# # parser.add_argument('--format', type=str,
-# #                     help='save in the format of cmu or coco or openpose, option: coco/cmu/open')
-# parser.add_argument('--min_box_area', type=int, default=0,
-#                     help='min box area to filter out')
-# parser.add_argument('--detbatch', type=int, default=5,
-#                     help='detection batch size PER GPU')
-# parser.add_argument('--posebatch', type=int, default=64,
-#                     help='pose estimation maximum batch size PER GPU')
-# parser.add_argument('--eval', dest='eval', default=False, action='store_true',
-#                     help='save the result json as coco format, using image index(int) instead of image name(str)')
-# parser.add_argument('--gpus', type=str, dest='gpus', default="0",
-#                     help='choose which cuda device to use by index and input comma to use multi gpus, e.g. 0,1,2,3. (input -1 for cpu only)')
-# parser.add_argument('--qsize', type=int, dest='qsize', default=1024,
-#                     help='the length of result buffer, where reducing it will lower requirement of cpu memory')
-# parser.add_argument('--flip', default=False, action='store_true',
-#                     help='enable flip testing')
-# parser.add_argument('--debug', default=False, action='store_true',
-#                     help='print detail information')
-# # """----------------------------- Video options -----------------------------"""
-# # parser.add_argument('--video', dest='video',
-# #                     help='video-name', default="")
-# parser.add_argument('--webcam', dest='webcam', type=int,
-#                     help='webcam number', default=-1)
-# parser.add_argument('--save_video', dest='save_video',
-#                     help='whether to save rendered video', default=False, action='store_true')
-# parser.add_argument('--vis_fast', dest='vis_fast',
-#                     help='use fast rendering', action='store_true', default=False)
-# """----------------------------- Tracking options -----------------------------"""
-# parser.add_argument('--pose_flow', dest='pose_flow',
-#                     help='track humans in video with PoseFlow', action='store_true', default=False)
-# parser.add_argument('--pose_track', dest='pose_track',
-#                     help='track humans in video with reid', action='store_true', default=False)
-
-# args = parser.parse_args()
 dirname = os.path.dirname(os.path.dirname(__file__))
+args = args().parse_args(["--cfg",os.path.join(dirname, 'configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml'), 
+                        "--checkpoint", os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth'),
+                        "--outdir", os.path.join(dirname, 'output')
+                        ])
 
-print(dirname)
-
-filename = os.path.join(dirname, 'configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml')
-
-cfg = update_config(filename)
+cfg = update_config(args.cfg)
 
 if platform.system() == 'Windows':
     args.sp = True
 
-# args.gpus = [int(i) for i in args.gpus.split(',')] if torch.cuda.device_count() >= 1 else [-1]
-# args.device = torch.device("cuda:" + str(args.gpus[0]) if args.gpus[0] >= 0 else "cpu")
-# args.detbatch = args.detbatch * len(args.gpus)
-# args.posebatch = args.posebatch * len(args.gpus)
-# args.tracking = args.pose_track or args.pose_flow or args.detector=='tracker'
+args.gpus = [int(i) for i in args.gpus.split(',')] if torch.cuda.device_count() >= 1 else [-1]
+args.device = torch.device("cuda:" + str(args.gpus[0]) if args.gpus[0] >= 0 else "cpu")
+args.detbatch = args.detbatch * len(args.gpus)
+args.posebatch = args.posebatch * len(args.gpus)
+args.tracking = args.pose_track or args.pose_flow or args.detector=='tracker'
 
 if not args.sp:
     torch.multiprocessing.set_start_method('forkserver', force=True)
@@ -166,7 +104,7 @@ def loop():
         n += 1
 
 
-def extractAlphaPose(list_image, batch_name, outputpath):
+def extractAlphaPose(list_image, batch_name):
     # mode, input_source = check_input()
 
     # if not os.path.exists(args.outputpath):
@@ -181,17 +119,14 @@ def extractAlphaPose(list_image, batch_name, outputpath):
     #     det_worker = det_loader.start()
     # else:
     det_loader = DetectionLoader(input_source, get_detector(args), cfg, args, batchName = batch_name, batchSize=args.detbatch, queueSize=args.qsize)
-    det_worker = det_loader.start()
+    # det_worker = det_loader.start()
 
     # Load pose model
     pose_model = builder.build_sppe(cfg.MODEL, preset_cfg=cfg.DATA_PRESET)
 
     # print('Loading pose model from %s...' % (args.checkpoint,))
-    filename = os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth')
-    
-    print(filename)
 
-    # pose_model.load_state_dict(torch.load(filename, map_location=args.device))
+    pose_model.load_state_dict(torch.load(args.checkpoint, map_location=args.device))
     pose_dataset = builder.retrieve_dataset(cfg.DATASET.TRAIN)
     if args.pose_track:
         tracker = Tracker(tcfg, args)
@@ -217,7 +152,7 @@ def extractAlphaPose(list_image, batch_name, outputpath):
     #         video_save_opt['savepath'] = os.path.join(args.outputpath, 'AlphaPose_webcam' + str(input_source) + '.mp4')
     #     video_save_opt.update(det_loader.videoinfo)
     #     writer = DataWriter(cfg, args, save_video=True, video_save_opt=video_save_opt, queueSize=queueSize).start()
-    writer = DataWriter(cfg, args, save_video=False, queueSize=queueSize, outputpath=outputpath).start()
+    writer = DataWriter(cfg, args, save_video=False, queueSize=queueSize).start()
 
     # if mode == 'webcam':
     #     print('Starting webcam demo, press Ctrl + C to terminate...')
