@@ -383,12 +383,12 @@ class SingleImageAlphaPose():
             image = self.writer.vis_frame(image, pose, self.writer.opt, self.writer.vis_thres)
         return image
 
-    def writeJson(self, final_result, outputpath, form='coco', for_eval=False):
+    def writeJson(self, final_result,for_eval=False):
         from alphapose.utils.pPose_nms import write_json
-        write_json(final_result, outputpath, form=form, for_eval=for_eval)
-        print("Results have been written to json.")
+        return write_json(final_result, for_eval=for_eval)
+        # print("Results have been written to json.")
 
-def example(image, im_name):
+def extractAlphaPose(image, im_name):
     outputpath = "examples/res/"
     if not os.path.exists(outputpath + '/vis'):
         os.mkdir(outputpath + '/vis')
@@ -407,7 +407,7 @@ def example(image, im_name):
 
     # write the result to json:
     result = [pose]
-    demo.writeJson(result, outputpath, form=args.format, for_eval=args.eval)
+    return demo.writeJson(result, for_eval=args.eval)
 
-if __name__ == "__main__":
-    example()
+# if __name__ == "__main__":
+#     example()

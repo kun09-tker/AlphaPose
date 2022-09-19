@@ -656,7 +656,7 @@ def PCK_match_fullbody(pick_pred, pred_score, all_preds, ref_dist):
     return num_match_keypoints
 
 
-def write_json(all_results, outputpath, for_eval=False, outputfile='alphapose-results.json'):
+def write_json(all_results, for_eval=False):
     '''
     all_result: result dict of predictions
     outputpath: output directory
@@ -746,8 +746,9 @@ def write_json(all_results, outputpath, for_eval=False, outputfile='alphapose-re
     #             with open(os.path.join(outputpath,'sep-json',name.split('.')[0]+'.json'),'w') as json_file:
     #                 json_file.write(json.dumps(json_results_cmu[name]))
     # else:
-    with open(os.path.join(outputpath, outputfile), 'w') as json_file:
-        json_file.write(json.dumps(json_results))
+    # with open(os.path.join(outputpath, outputfile), 'w') as json_file:
+    #     json_file.write(json.dumps(json_results))
+    return json_results
 
 
 def ppose_nms_validate_preprocess(_res):
