@@ -65,12 +65,12 @@ class YOLODetector(BaseDetector):
         Input: image name(str) or raw image data(ndarray or torch.Tensor,channel GBR)
         Output: pre-processed image data(torch.FloatTensor,(1,3,h,w))
         """
-        # if isinstance(img_source, str):
-        #     img, orig_img, im_dim_list = prep_image(img_source, self.inp_dim)
-        # elif isinstance(img_source, torch.Tensor) or isinstance(img_source, np.ndarray):
-        img, orig_img, im_dim_list = prep_frame(img_source, self.inp_dim)
-        # else:
-            # raise IOError('Unknown image source type: {}'.format(type(img_source)))
+        if isinstance(img_source, str):
+            img, orig_img, im_dim_list = prep_image(img_source, self.inp_dim)
+        elif isinstance(img_source, torch.Tensor) or isinstance(img_source, np.ndarray):
+            img, orig_img, im_dim_list = prep_frame(img_source, self.inp_dim)
+        else:
+            raise IOError('Unknown image source type: {}'.format(type(img_source)))
 
         return img
 

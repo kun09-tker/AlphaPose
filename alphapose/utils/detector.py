@@ -21,7 +21,8 @@ class DetectionLoader():
 
         if mode == 'image':
             self.img_dir = opt.inputpath
-            self.imglist = [os.path.join(self.img_dir, im_name.rstrip('\n').rstrip('\r')) for im_name in input_source]
+            # self.imglist = [os.path.join(self.img_dir, im_name.rstrip('\n').rstrip('\r')) for im_name in input_source]
+            self.imglist = input_source
             self.datalen = len(input_source)
         elif mode == 'video':
             stream = cv2.VideoCapture(input_source)
@@ -33,9 +34,9 @@ class DetectionLoader():
             self.frameSize = (int(stream.get(cv2.CAP_PROP_FRAME_WIDTH)), int(stream.get(cv2.CAP_PROP_FRAME_HEIGHT)))
             self.videoinfo = {'fourcc': self.fourcc, 'fps': self.fps, 'frameSize': self.frameSize}
             stream.release()
-        elif mode == 'list_image':
-          self.datalen = len(input_source)
-          self.imglist = input_source
+        # elif mode == 'list_image':
+        #   self.datalen = len(input_source)
+        #   self.imglist = input_source
 
         self.detector = detector
         self.batchSize = batchSize
@@ -107,7 +108,7 @@ class DetectionLoader():
 
     def start(self):
         # start a thread to pre process images for object detection
-        if self.mode == 'list_image':
+        if self.mode == 'image':
             image_preprocess_worker = self.start_worker(self.image_preprocess)
         elif self.mode == 'video':
             image_preprocess_worker = self.start_worker(self.frame_preprocess)
