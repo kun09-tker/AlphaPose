@@ -1,5 +1,4 @@
 import argparse
-import os
 
 def args():
     
@@ -21,7 +20,7 @@ def args():
     parser.add_argument('--image', dest='inputimg',
                         help='image-name', default="")
     parser.add_argument('--outdir', dest='outputpath',
-                        help='output-directory')
+                    help='output-directory', default="examples/res/")
     parser.add_argument('--save_img', default=False, action='store_true',
                         help='save result as image')
     parser.add_argument('--vis', default=False, action='store_true',
