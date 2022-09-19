@@ -13,7 +13,7 @@ from alphapose.utils.presets import SimpleTransform, SimpleTransform3DSMPL
 from alphapose.models import builder
 
 class DetectionLoader():
-    def __init__(self, input_source, detector, cfg, opt, mode='image', batchName = "",batchSize=1, queueSize=128):
+    def __init__(self, input_source, detector, cfg, opt, mode='image', batchSize=1, queueSize=128):
         self.cfg = cfg
         self.opt = opt
         self.mode = mode
@@ -21,8 +21,7 @@ class DetectionLoader():
 
         if mode == 'image':
             self.img_dir = opt.inputpath
-            # self.imglist = [os.path.join(self.img_dir, im_name.rstrip('\n').rstrip('\r')) for im_name in input_source]
-            self.imglist = input_source
+            self.imglist = [os.path.join(self.img_dir, im_name.rstrip('\n').rstrip('\r')) for im_name in input_source]
             self.datalen = len(input_source)
         elif mode == 'video':
             stream = cv2.VideoCapture(input_source)
@@ -34,13 +33,9 @@ class DetectionLoader():
             self.frameSize = (int(stream.get(cv2.CAP_PROP_FRAME_WIDTH)), int(stream.get(cv2.CAP_PROP_FRAME_HEIGHT)))
             self.videoinfo = {'fourcc': self.fourcc, 'fps': self.fps, 'frameSize': self.frameSize}
             stream.release()
-        # elif mode == 'list_image':
-        #   self.datalen = len(input_source)
-        #   self.imglist = input_source
 
         self.detector = detector
         self.batchSize = batchSize
-        self.batchName = batchName
         leftover = 0
         if (self.datalen) % batchSize:
             leftover = 1
@@ -103,6 +98,7 @@ class DetectionLoader():
         else:
             p = mp.Process(target=target, args=())
         # p.daemon = True
+        print(p)
         p.start()
         return p
 
@@ -155,21 +151,21 @@ class DetectionLoader():
                 if self.stopped:
                     self.wait_and_put(self.image_queue, (None, None, None, None))
                     return
-                im_k = self.imglist[k]
+                im_name_k = self.imglist[k]
 
                 # expected image shape like (1,3,h,w) or (3,h,w)
-                img_k = self.detector.image_preprocess(im_k)
+                img_k = self.detector.image_preprocess(im_name_k)
                 if isinstance(img_k, np.ndarray):
                     img_k = torch.from_numpy(img_k)
                 # add one dimension at the front for batch if image shape (3,h,w)
                 if img_k.dim() == 3:
                     img_k = img_k.unsqueeze(0)
-                orig_img_k = cv2.cvtColor(im_k, cv2.COLOR_BGR2RGB) # scipy.misc.imread(im_name_k, mode='RGB') is depreciated
+                orig_img_k = cv2.cvtColor(cv2.imread(im_name_k), cv2.COLOR_BGR2RGB) # scipy.misc.imread(im_name_k, mode='RGB') is depreciated
                 im_dim_list_k = orig_img_k.shape[1], orig_img_k.shape[0]
 
                 imgs.append(img_k)
                 orig_imgs.append(orig_img_k)
-                im_names.append(self.batchName)
+                im_names.append(os.path.basename(im_name_k))
                 im_dim_list.append(im_dim_list_k)
 
             with torch.no_grad():

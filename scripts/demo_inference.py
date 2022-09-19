@@ -87,8 +87,8 @@ from alphapose.utils.args import args
 
 dirname = os.path.dirname(os.path.dirname(__file__))
 args = args().parse_args(["--cfg",os.path.join(dirname, 'configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml'), 
-                        "--checkpoint", os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth')
-                        # "--video", os.path.join(dirname, 'video.mp4')
+                        "--checkpoint", os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth'),
+                        "--video", os.path.join(dirname, 'data/fi35_xvid.avi')
                         ])
 cfg = update_config(args.cfg)
 
@@ -106,48 +106,48 @@ if not args.sp:
     torch.multiprocessing.set_sharing_strategy('file_system')
 
 
-# def check_input():
-#     # for wecam
-#     if args.webcam != -1:
-#         args.detbatch = 1
-#         return 'webcam', int(args.webcam)
+def check_input():
+    # for wecam
+    if args.webcam != -1:
+        args.detbatch = 1
+        return 'webcam', int(args.webcam)
 
-#     # for video
-#     if len(args.video):
-#         if os.path.isfile(args.video):
-#             videofile = args.video
-#             return 'video', videofile
-#         else:
-#             raise IOError('Error: --video must refer to a video file, not directory.')
+    # for video
+    if len(args.video):
+        if os.path.isfile(args.video):
+            videofile = args.video
+            return 'video', videofile
+        else:
+            raise IOError('Error: --video must refer to a video file, not directory.')
 
-#     # for detection results
-#     if len(args.detfile):
-#         if os.path.isfile(args.detfile):
-#             detfile = args.detfile
-#             return 'detfile', detfile
-#         else:
-#             raise IOError('Error: --detfile must refer to a detection json file, not directory.')
+    # for detection results
+    if len(args.detfile):
+        if os.path.isfile(args.detfile):
+            detfile = args.detfile
+            return 'detfile', detfile
+        else:
+            raise IOError('Error: --detfile must refer to a detection json file, not directory.')
 
-#     # for images
-#     if len(args.inputpath) or len(args.inputlist) or len(args.inputimg):
-#         inputpath = args.inputpath
-#         inputlist = args.inputlist
-#         inputimg = args.inputimg
+    # for images
+    if len(args.inputpath) or len(args.inputlist) or len(args.inputimg):
+        inputpath = args.inputpath
+        inputlist = args.inputlist
+        inputimg = args.inputimg
 
-#         if len(inputlist):
-#             im_names = open(inputlist, 'r').readlines()
-#         elif len(inputpath) and inputpath != '/':
-#             for root, dirs, files in os.walk(inputpath):
-#                 im_names = files
-#             im_names = natsort.natsorted(im_names)
-#         elif len(inputimg):
-#             args.inputpath = os.path.split(inputimg)[0]
-#             im_names = [os.path.split(inputimg)[1]]
+        if len(inputlist):
+            im_names = open(inputlist, 'r').readlines()
+        elif len(inputpath) and inputpath != '/':
+            for root, dirs, files in os.walk(inputpath):
+                im_names = files
+            im_names = natsort.natsorted(im_names)
+        elif len(inputimg):
+            args.inputpath = os.path.split(inputimg)[0]
+            im_names = [os.path.split(inputimg)[1]]
 
-#         return 'image', im_names
+        return 'image', im_names
 
-#     else:
-#         raise NotImplementedError
+    else:
+        raise NotImplementedError
 
 
 def print_finish_info():
@@ -164,8 +164,8 @@ def loop():
         n += 1
 
 
-def extractAlphaPose(input_source, batchName):
-    mode = "list_image"
+def extractAlphaPose():
+    mode, input_source = check_input()
 
     if not os.path.exists(args.outputpath):
         os.makedirs(args.outputpath)
@@ -178,7 +178,7 @@ def extractAlphaPose(input_source, batchName):
         det_loader = FileDetectionLoader(input_source, cfg, args)
         det_worker = det_loader.start()
     else:
-        det_loader = DetectionLoader(input_source, get_detector(args), cfg, args, batchName=batchName ,batchSize=args.detbatch, mode=mode, queueSize=args.qsize)
+        det_loader = DetectionLoader(input_source, get_detector(args), cfg, args,batchSize=args.detbatch, mode=mode, queueSize=args.qsize)
         det_worker = det_loader.start()
 
     # Load pose model
