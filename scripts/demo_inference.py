@@ -88,7 +88,7 @@ from alphapose.utils.args import args
 dirname = os.path.dirname(os.path.dirname(__file__))
 args = args().parse_args(["--cfg",os.path.join(dirname, 'configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml'), 
                         "--checkpoint", os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth'),
-                        "--video", os.path.join(dirname, 'data/fi35_xvid.avi')
+                        "----indir", os.path.join(dirname, 'data')
                         ])
 cfg = update_config(args.cfg)
 
