@@ -406,8 +406,11 @@ def extractAlphaPose(image, im_name):
     # cv2.waitKey(30)
 
     # write the result to json:
-    result = [pose]
-    return demo.writeJson(result, image, for_eval=args.eval)
+    if not pose:
+      return None
+    else:
+      result = [pose]
+      return demo.writeJson(result, image, for_eval=args.eval)
 
 # if __name__ == "__main__":
 #     example()
