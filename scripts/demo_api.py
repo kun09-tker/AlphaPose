@@ -301,7 +301,7 @@ class SingleImageAlphaPose():
         # Load pose model
         self.pose_model = builder.build_sppe(cfg.MODEL, preset_cfg=cfg.DATA_PRESET)
 
-        print(f'Loading pose model from {args.checkpoint}...')
+        # print(f'Loading pose model from {args.checkpoint}...')
         self.pose_model.load_state_dict(torch.load(args.checkpoint, map_location=args.device))
         self.pose_dataset = builder.retrieve_dataset(cfg.DATASET.TRAIN)
 
@@ -365,13 +365,13 @@ class SingleImageAlphaPose():
                     'det time: {dt:.4f} | pose time: {pt:.4f} | post processing: {pn:.4f}'.format(
                         dt=np.mean(runtime_profile['dt']), pt=np.mean(runtime_profile['pt']), pn=np.mean(runtime_profile['pn']))
                 )
-            print('===========================> Finish Model Running.')
+            # print('===========================> Finish Model Running.')
         except Exception as e:
             print(repr(e))
             print('An error as above occurs when processing the images, please check it')
             pass
-        except KeyboardInterrupt:
-            print('===========================> Finish Model Running.')
+        # except KeyboardInterrupt:
+        #     print('===========================> Finish Model Running.')
 
         return pose
 
@@ -383,23 +383,23 @@ class SingleImageAlphaPose():
             image = self.writer.vis_frame(image, pose, self.writer.opt, self.writer.vis_thres)
         return image
 
-    def writeJson(self, final_result,for_eval=False):
+    def writeJson(self, final_result, image, for_eval=False):
         from alphapose.utils.pPose_nms import write_json
-        return write_json(final_result, for_eval=for_eval)
+        return write_json(final_result, image, for_eval=for_eval)
         # print("Results have been written to json.")
 
 def extractAlphaPose(image, im_name):
-    outputpath = "examples/res/"
-    if not os.path.exists(outputpath + '/vis'):
-        os.mkdir(outputpath + '/vis')
+    # outputpath = os.path.join(dirname,"examples/")
+    # if not os.path.exists(os.path.join(outputpath, 'res')):
+    #     os.mkdir(os.path.join(outputpath, 'res'))
 
     demo = SingleImageAlphaPose(args, cfg)
     # im_name = args.inputimg    # the path to the target image
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pose = demo.process(im_name, image)
-    img = demo.getImg()     # or you can just use: img = cv2.imread(image)
-    img = demo.vis(img, pose)   # visulize the pose result
-    cv2.imwrite(os.path.join(outputpath, 'vis', os.path.basename(im_name)), img)
+    # img = demo.getImg()     # or you can just use: img = cv2.imread(image)
+    # img = demo.vis(img, pose)   # visulize the pose result
+    # cv2.imwrite(os.path.join(outputpath, 'res', im_name+".png"), img)
     
     # if you want to vis the img:
     # cv2.imshow("AlphaPose Demo", img)
@@ -407,7 +407,7 @@ def extractAlphaPose(image, im_name):
 
     # write the result to json:
     result = [pose]
-    return demo.writeJson(result, for_eval=args.eval)
+    return demo.writeJson(result, image, for_eval=args.eval)
 
 # if __name__ == "__main__":
 #     example()
