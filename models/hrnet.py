@@ -11,7 +11,7 @@ import os
 import torch
 import torch.nn as nn
 
-from .builder import SPPE
+from builder import SPPE
 
 BN_MOMENTUM = 0.1
 

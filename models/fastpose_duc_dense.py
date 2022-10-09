@@ -5,10 +5,10 @@
 
 import torch
 import torch.nn as nn
-from .builder import SPPE
-from .layers.Resnet import ResNet
-from .layers.SE_Resnet import SEResnet
-from .layers.ShuffleResnet import ShuffleResnet
+from builder import SPPE
+from layers.Resnet import ResNet
+from layers.SE_Resnet import SEResnet
+from layers.ShuffleResnet import ShuffleResnet
 
 @SPPE.register_module
 class FastPose_DUC_Dense(nn.Module):

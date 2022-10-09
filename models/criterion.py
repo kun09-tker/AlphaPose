@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 
-from .builder import LOSS
+from builder import LOSS
 
 from utils.transforms import _integral_tensor
 

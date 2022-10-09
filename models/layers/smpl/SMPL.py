@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from .lbs import lbs, hybrik, rotmat_to_quat, quat_to_rotmat
+from lbs import lbs, hybrik, rotmat_to_quat, quat_to_rotmat
 
 try:
     import cPickle as pk
