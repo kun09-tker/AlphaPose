@@ -62,7 +62,7 @@ from detector.apis import get_detector
 # parser.add_argument('--pose_track', dest='pose_track',
 #                     help='track humans in video with reid', action='store_true', default=False)
 
-dirname = os.path.dirname(os.path.dirname(__file__))
+dirname = os.path.dirname(__file__)
 args = args().parse_args(["--cfg",os.path.join(dirname, 'configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml'), 
                         "--checkpoint", os.path.join(dirname, 'pretrained_models/fast_res50_256x192.pth')
                         ])
