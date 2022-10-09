@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 import cv2 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 try:
     from util import count_parameters as count
     from util import convert2cpu as cpu
