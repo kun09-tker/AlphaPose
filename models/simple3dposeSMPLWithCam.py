@@ -6,9 +6,9 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-from builder import SPPE
-from layers.Resnet import ResNet
-from layers.smpl.SMPL import SMPL_layer
+from .builder import SPPE
+from .layers.Resnet import ResNet
+from .layers.smpl.SMPL import SMPL_layer
 
 ModelOutput = namedtuple(
     typename='ModelOutput',

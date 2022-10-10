@@ -5,9 +5,9 @@
 
 import torch.nn as nn
 
-from builder import SPPE
-from layers.DUC import DUC
-from layers.SE_Resnet import SEResnet
+from .builder import SPPE
+from .layers.DUC import DUC
+from .layers.SE_Resnet import SEResnet
 
 
 @SPPE.register_module

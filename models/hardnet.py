@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import torch.nn.init as init
 
 
-from builder import SPPE
+from .builder import SPPE
 # from .layers.Resnet import ResNet
 # from .layers.SE_Resnet import SEResnet
 # from .layers.ShuffleResnet import ShuffleResnet

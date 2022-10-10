@@ -5,8 +5,8 @@
 
 import torch.nn as nn
 
-from builder import SPPE
-from layers.Resnet import ResNet
+from .builder import SPPE
+from .layers.Resnet import ResNet
 
 
 @SPPE.register_module
