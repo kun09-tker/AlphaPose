@@ -3,11 +3,11 @@ from __future__ import division
 
 import torch 
 import torch.nn as nn
-import torch.nn.functional as F 
+# import torch.nn.functional as F 
 from torch.autograd import Variable
 import numpy as np
 import cv2 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 try:
     from bbox import bbox_iou
 except ImportError:
