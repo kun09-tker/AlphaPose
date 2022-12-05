@@ -24,3 +24,4 @@ __all__ = ['CustomDataset', 'ConcatDataset', 'Mpii', 'Mscoco', 'Mscoco_det', \
 		   'Halpe_coco_wholebody_136', 'Halpe_coco_wholebody_136_det', \
 		   'Halpe_68_noface', 'Halpe_68_noface_det', 'SingleHand', 'SingleHand_det', \
 		   'coco_wholebody', 'coco_wholebody_det']
+

@@ -282,11 +282,11 @@ class DataWriter():
 
             # if hm_data.size()[1] == 49:
             #     from utils.vis import vis_frame_dense as vis_frame
-            # elif self.opt.vis_fast:
-            #     from utils.vis import vis_frame_fast as vis_frame
-            # else:
-            #     from utils.vis import vis_frame
-            # self.vis_frame = vis_frame
+            if self.opt.vis_fast:
+                from utils.vis import vis_frame_fast as vis_frame
+            else:
+                from utils.vis import vis_frame
+            self.vis_frame = vis_frame
 
         return result
 
@@ -378,14 +378,14 @@ class SingleImageAlphaPose():
     def getImg(self):
         return self.writer.orig_img
 
-    # def vis(self, image, pose):
-    #     if pose is not None:
-    #         image = self.writer.vis_frame(image, pose, self.writer.opt, self.writer.vis_thres)
-    #     return image
+    def vis(self, image, pose):
+        if pose is not None:
+            image = self.writer.vis_frame(image, pose, self.writer.opt, self.writer.vis_thres)
+        return image
 
-    def writeJson(self, final_result, image, for_eval=False):
-        from utils.pPose_nms import write_json
-        return write_json(final_result, image, for_eval=for_eval)
+    # def writeJson(self, final_result, image, for_eval=False):
+    #     from utils.pPose_nms import write_json
+    #     return write_json(final_result, image, for_eval=for_eval)
         # print("Results have been written to json.")
 
 def extractAlphaPose(image, im_name):
@@ -397,8 +397,12 @@ def extractAlphaPose(image, im_name):
     # im_name = args.inputimg    # the path to the target image
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pose = demo.process(im_name, image)
-    # img = demo.getImg()     # or you can just use: img = cv2.imread(image)
-    # img = demo.vis(img, pose)   # visulize the pose result
+    if not pose:
+      return None
+    else:
+        img = demo.getImg()     # or you can just use: img = cv2.imread(image)
+        img = demo.vis(img, pose)   # visulize the pose result
+        return img
     # cv2.imwrite(os.path.join(outputpath, 'res', im_name+".png"), img)
     
     # if you want to vis the img:
@@ -406,11 +410,6 @@ def extractAlphaPose(image, im_name):
     # cv2.waitKey(30)
 
     # write the result to json:
-    if not pose:
-      return None
-    else:
-      result = [pose]
-      return demo.writeJson(result, image, for_eval=args.eval)
 
 # if __name__ == "__main__":
 #     example()
